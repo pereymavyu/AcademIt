@@ -17,13 +17,16 @@ public class Shapes_main {
     }
 
     public static void main(String[] args) {
-        Shape[] shapes = new Shape[5];
+        Shape[] shapes = {
+                new Circle(20),
+                new Square(7),
+                new Rectangle(4, 8),
+                new Triangle(0, 0, 50,0, 0,50),
+                new Circle(10),
+                new Square(50),
+        };
 
-        shapes[0] = new Circle(20);
-        shapes[1] = new Square(7);
-        shapes[2] = new Rectangle(4, 8);
-        shapes[3] = new Rectangle(4, 8);
-        shapes[4] = new Circle(50);
+        System.out.println("Расположение фигур по возрастанию площади:");
 
         for(int i = shapes.length - 1; i >= 0; --i){
             System.out.println(getMaxAreaShape(shapes, i));

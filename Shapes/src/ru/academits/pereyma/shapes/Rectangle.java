@@ -1,5 +1,7 @@
 package ru.academits.pereyma.shapes;
 
+import java.util.Objects;
+
 public class Rectangle implements Shape {
     private double width;
     private double height;
@@ -14,9 +16,17 @@ public class Rectangle implements Shape {
         return width;
     }
 
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
     @Override
     public double getHeight() {
         return height;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
     }
 
     @Override
@@ -27,5 +37,26 @@ public class Rectangle implements Shape {
     @Override
     public double getPerimeter() {
         return (width + height) * 2;
+    }
+
+    @Override
+    public String toString() {
+        return "Rectangle{" +
+                "width=" + width +
+                ", height=" + height +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Rectangle rectangle = (Rectangle) o;
+        return Double.compare(rectangle.width, width) == 0 && Double.compare(rectangle.height, height) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(width, height);
     }
 }
