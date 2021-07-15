@@ -78,16 +78,18 @@ public class Range {
             return null;
         }
 
-        if (this.isInside(range.getFrom()) && this.isInside(range.getTo())) {
+        if (this.getFrom() < range.getFrom() && this.getTo() > range.getTo()) {
             return new Range[]{new Range(this.getFrom(), range.getFrom()), new Range(range.getTo(), this.getTo())};
         }
 
         Range difference = new Range(this.getFrom(), this.getTo());
 
-        if (this.isInside(range.getFrom())) {
-            difference.setTo(range.getFrom());
-        } else if (this.isInside(range.getTo())) {
+        if (this.isInside(range.getTo()) && range.getTo() != this.getTo()) {
             difference.setFrom(range.getTo());
+        }
+
+        if (this.isInside(range.getFrom()) && range.getFrom() != this.getFrom()) {
+            difference.setTo(range.getFrom());
         }
 
         return new Range[]{difference};

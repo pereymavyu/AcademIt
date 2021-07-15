@@ -23,7 +23,7 @@ public class Range_main {
 
         //Вторая часть задачи
         Range range1 = new Range(0, 5);
-        Range range2 = new Range(5, 10);
+        Range range2 = new Range(6, 8);
 
         Range intersection = range1.getIntersection(range2);
         Range[] union = range1.getUnion(range2);
