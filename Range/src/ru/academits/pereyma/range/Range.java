@@ -34,72 +34,43 @@ public class Range {
     }
 
     public Range getIntersection(Range range) {
-        if (this.getFrom() >= range.getTo() || this.getTo() <= range.getFrom()) {
+        if (from >= range.to || to <= range.from) {
             return null;
         }
 
-        Range intersection = new Range(this.getFrom(), this.getTo());
-
-        if (this.isInside(range.getFrom())) {
-            intersection.setFrom(range.getFrom());
-        }
-
-        if (this.isInside(range.getTo())) {
-            intersection.setTo(range.getTo());
-        }
-
-        return intersection;
+        return new Range(Math.max(from, range.from), Math.min(to, range.to));
     }
 
     public Range[] getUnion(Range range) {
-        if (this.getFrom() > range.getTo()) {
-            return new Range[]{new Range(range.getFrom(), range.getTo()), new Range(this.getFrom(), this.getTo())};
+        if (range.to < from) {
+            return new Range[]{new Range(range.from, range.to), new Range(from, to)};
         }
 
-        if (this.getTo() < range.getFrom()) {
-            return new Range[]{new Range(this.getFrom(), this.getTo()), new Range(range.getFrom(), range.getTo())};
+        if (range.from > to) {
+            return new Range[]{new Range(from, to), new Range(range.from, range.to)};
         }
 
-        Range union = new Range(this.getFrom(), this.getTo());
-
-        if (range.isInside(this.getFrom())) {
-            union.setFrom(range.getFrom());
-        }
-
-        if (range.isInside(this.getTo())) {
-            union.setTo(range.getTo());
-        }
-
-        return new Range[]{union};
+        return new Range[]{new Range(Math.min(from, range.from), Math.max(to, range.to))};
     }
 
     public Range[] getDifference(Range range) {
-        if (this.getFrom() >= range.getFrom() && this.getTo() <= range.getTo()) {
-            return null;
+        if (from >= range.from && to <= range.to) {
+            return new Range[0];
         }
 
-        if (this.getFrom() < range.getFrom() && this.getTo() > range.getTo()) {
-            return new Range[]{new Range(this.getFrom(), range.getFrom()), new Range(range.getTo(), this.getTo())};
+        if (from < range.from && to > range.to) {
+            return new Range[]{new Range(from, range.from), new Range(range.to, to)};
         }
 
-        Range difference = new Range(this.getFrom(), this.getTo());
-
-        if (this.isInside(range.getTo()) && range.getTo() != this.getTo()) {
-            difference.setFrom(range.getTo());
+        if (range.from <= from) {
+            return new Range[]{new Range(Math.max(from, range.to), to)};
         }
 
-        if (this.isInside(range.getFrom()) && range.getFrom() != this.getFrom()) {
-            difference.setTo(range.getFrom());
-        }
-
-        return new Range[]{difference};
+        return new Range[]{new Range(from, Math.min(to, range.from))};
     }
 
     @Override
     public String toString() {
-        return "{" +
-                from +
-                ", " + to +
-                '}';
+        return "{" + from + "; " + to + "}";
     }
 }
