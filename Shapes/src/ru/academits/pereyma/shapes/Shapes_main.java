@@ -1,36 +1,31 @@
 package ru.academits.pereyma.shapes;
 
 import java.util.Arrays;
-import java.util.Comparator;
 
 public class Shapes_main {
     private static Shape getMaxAreaShape(Shape[] shapes) {
-        Comparator<Shape> comparator = Comparator.comparing(Shape::getArea);
-        Arrays.sort(shapes, comparator);
+        Arrays.sort(shapes, new AreaComparator());
         return shapes[shapes.length - 1];
     }
 
-    private static Shape getMaxAreaShape(Shape[] shapes, int maxIndex) {
-        Comparator<Shape> comparator = Comparator.comparing(Shape::getArea);
-        Arrays.sort(shapes, 0, maxIndex, comparator);
-        return shapes[maxIndex];
+    private static Shape getSecondMaxPerimeterShape(Shape[] shapes) {
+        Arrays.sort(shapes, new PerimeterComparator());
+        return shapes[shapes.length - 2];
     }
 
     public static void main(String[] args) {
         Shape[] shapes = {
-                new Circle(20),
-                new Square(7),
-                new Rectangle(4, 8),
-                new Triangle(0, 0, 50,0, 0,50),
-                new Circle(10),
+                new Circle(2),
+                new Circle(2),
+                new Square(1),
+                new Rectangle(1, 2),
+                new Triangle(0, 0, 1, 0, 0, 1),
+                new Circle(1),
                 new Square(50),
+                new Triangle(0, 0, 0, 0, 0, 0)
         };
 
-        System.out.println("Расположение фигур по возрастанию площади:");
-
-        for(int i = shapes.length - 1; i >= 0; --i){
-            System.out.println(getMaxAreaShape(shapes, i));
-            System.out.println(shapes[i].getArea());
-        }
+        System.out.println("Фигура с наибольшей площадью: " + getMaxAreaShape(shapes));
+        System.out.println("Фигура со вторым по величине периметром: " + getSecondMaxPerimeterShape(shapes));
     }
 }
