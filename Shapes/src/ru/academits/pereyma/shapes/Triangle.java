@@ -43,10 +43,7 @@ public class Triangle implements Shape {
 
         double semiPerimeter = (sidesLengths[0] + sidesLengths[1] + sidesLengths[2]) / 2;
 
-        double area = Math.sqrt(semiPerimeter * (semiPerimeter - sidesLengths[0])
-                * (semiPerimeter - sidesLengths[1]) * (semiPerimeter - sidesLengths[2]));
-
-        return area;
+        return Math.sqrt(semiPerimeter * (semiPerimeter - sidesLengths[0]) * (semiPerimeter - sidesLengths[1]) * (semiPerimeter - sidesLengths[2]));
     }
 
     @Override

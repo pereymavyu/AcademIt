@@ -2,7 +2,7 @@ package ru.academits.pereyma.shapes;
 
 import java.util.Objects;
 
-public class Square implements Shape{
+public class Square implements Shape {
     private double sideLength;
 
     public Square(double sideLength) {
@@ -31,9 +31,7 @@ public class Square implements Shape{
 
     @Override
     public String toString() {
-        return "Square{" +
-                "sideLength=" + sideLength +
-                '}';
+        return "Square{" + "sideLength=" + sideLength + '}';
     }
 
     @Override

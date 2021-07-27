@@ -1,4 +1,6 @@
-package ru.academits.pereyma.shapes;
+package ru.academits.pereyma.main;
+
+import ru.academits.pereyma.shapes.Shape;
 
 import java.util.Comparator;
 

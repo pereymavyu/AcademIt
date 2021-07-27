@@ -1,8 +1,10 @@
-package ru.academits.pereyma.shapes;
+package ru.academits.pereyma.main;
+
+import ru.academits.pereyma.shapes.*;
 
 import java.util.Arrays;
 
-public class Shapes_main {
+public class ShapesMain {
     private static Shape getMaxAreaShape(Shape[] shapes) {
         Arrays.sort(shapes, new AreaComparator());
         return shapes[shapes.length - 1];
@@ -16,7 +18,7 @@ public class Shapes_main {
     public static void main(String[] args) {
         Shape[] shapes = {
                 new Circle(2),
-                new Circle(2),
+                new Circle(100),
                 new Square(1),
                 new Rectangle(1, 2),
                 new Triangle(0, 0, 1, 0, 0, 1),

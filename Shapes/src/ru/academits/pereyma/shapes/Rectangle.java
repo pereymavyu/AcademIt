@@ -16,17 +16,9 @@ public class Rectangle implements Shape {
         return width;
     }
 
-    public void setWidth(double width) {
-        this.width = width;
-    }
-
     @Override
     public double getHeight() {
         return height;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
     }
 
     @Override
@@ -41,10 +33,7 @@ public class Rectangle implements Shape {
 
     @Override
     public String toString() {
-        return "Rectangle{" +
-                "width=" + width +
-                ", height=" + height +
-                '}';
+        return "Rectangle{" + "width=" + width + ", height=" + height + '}';
     }
 
     @Override
