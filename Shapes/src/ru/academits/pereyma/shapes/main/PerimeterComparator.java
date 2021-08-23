@@ -1,4 +1,4 @@
-package ru.academits.pereyma.main;
+package ru.academits.pereyma.shapes.main;
 
 import ru.academits.pereyma.shapes.Shape;
 

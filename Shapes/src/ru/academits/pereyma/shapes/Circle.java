@@ -1,9 +1,7 @@
 package ru.academits.pereyma.shapes;
 
-import java.util.Objects;
-
 public class Circle implements Shape {
-    private double radius;
+    private final double radius;
 
     public Circle(double radius) {
         this.radius = radius;
@@ -31,19 +29,30 @@ public class Circle implements Shape {
 
     @Override
     public String toString() {
-        return "Circle{" + "radius=" + radius + '}';
+        return "Circle{radius = " + radius + '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         Circle circle = (Circle) o;
-        return Double.compare(circle.radius, radius) == 0;
+        return circle.radius == radius;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(radius);
+        final int prime = 31;
+        int hash = 1;
+
+        hash = prime * hash + Double.hashCode(radius);
+
+        return hash;
     }
 }

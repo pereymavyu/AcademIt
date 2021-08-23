@@ -1,9 +1,7 @@
 package ru.academits.pereyma.shapes;
 
-import java.util.Objects;
-
 public class Square implements Shape {
-    private double sideLength;
+    private final double sideLength;
 
     public Square(double sideLength) {
         this.sideLength = sideLength;
@@ -31,19 +29,30 @@ public class Square implements Shape {
 
     @Override
     public String toString() {
-        return "Square{" + "sideLength=" + sideLength + '}';
+        return "Square{sideLength = " + sideLength + '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         Square square = (Square) o;
-        return Double.compare(square.sideLength, sideLength) == 0;
+        return square.sideLength == sideLength;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sideLength);
+        final int prime = 31;
+        int hash = 1;
+
+        hash = prime * hash + Double.hashCode(sideLength);
+
+        return hash;
     }
 }
