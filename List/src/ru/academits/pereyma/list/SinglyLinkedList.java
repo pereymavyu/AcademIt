@@ -1,4 +1,4 @@
-package ru.academits.pereyma.mylist;
+package ru.academits.pereyma.list;
 
 public class SinglyLinkedList<T> {
     private ListItem<T> head;

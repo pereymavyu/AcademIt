@@ -1,4 +1,4 @@
-package ru.academits.pereyma.mylist;
+package ru.academits.pereyma.list;
 
 public class ListItem<T> {
     private T data;
