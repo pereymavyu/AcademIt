@@ -47,15 +47,18 @@ public class SinglyLinkedList<T> {
 
         prev.setNext(temp.getNext());
 
+        --count;
         return temp.getData();
     }
 
-    public void insertFirstItem(ListItem <T> listItem) {
+    public void insertFirstItem(ListItem<T> listItem) {
         listItem.setNext(head);
         head = listItem;
+
+        ++count;
     }
 
-    public void insertItem(int index, ListItem <T> listItem) {
+    public void insertItem(int index, ListItem<T> listItem) {
         ListItem<T> temp = head;
         ListItem<T> prev = null;
 
@@ -66,16 +69,63 @@ public class SinglyLinkedList<T> {
 
         prev.setNext(listItem);
         listItem.setNext(temp);
+
+        ++count;
     }
 
     public boolean removeItem(T data) {
+        ListItem<T> temp = head;
+
+        for (int i = 0; i < count; ++i) {
+            if (temp.getData().equals(data)) {
+                removeItem(i);
+
+                return true;
+            }
+
+            temp = temp.getNext();
+        }
+
         return false;
     }
 
-    public SinglyLinkedList<T> copy() {
+    public T removeFirstItem() {
+        T data = head.getData();
+        head = head.getNext();
 
+        --count;
+
+        return data;
     }
 
+    public void invert() {
+        ListItem<T> prev = head;
+        ListItem<T> temp = head.getNext();
+
+        prev.setNext(null);
+
+        ListItem<T> next = temp.getNext();
+
+        for (int i = 0; i < count; ++i) {
+            temp.setNext(prev);
+            prev = temp;
+            temp = next;
+            next = temp.getNext();
+            }
+    }
+
+    public SinglyLinkedList<T> copy() {
+        SinglyLinkedList<T> result = new SinglyLinkedList<T>();
 
 
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "SinglyLinkedList{" +
+                "head=" + head +
+                ", count=" + count +
+                '}';
+    }
 }

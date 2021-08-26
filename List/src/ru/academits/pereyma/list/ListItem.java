@@ -28,4 +28,12 @@ public class ListItem<T> {
     public void setNext(ListItem<T> next) {
         this.next = next;
     }
+
+    @Override
+    public String toString() {
+        return "ListItem{" +
+                "data=" + data +
+                ", next=" + next +
+                '}';
+    }
 }
