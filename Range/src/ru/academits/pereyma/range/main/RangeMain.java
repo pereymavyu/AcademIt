@@ -15,9 +15,9 @@ public class RangeMain {
         double userNumber = 5;
 
         if (range1.isInside(userNumber)) {
-            System.out.printf("Число %.2f принадлежит диапазону %s;%n", userNumber, range1.toString());
+            System.out.printf("Число %.2f принадлежит диапазону %s;%n", userNumber, range1);
         } else {
-            System.out.printf("Число %.2f не принадлежит диапазону %s;%n", userNumber, range1.toString());
+            System.out.printf("Число %.2f не принадлежит диапазону %s;%n", userNumber, range1);
         }
 
         System.out.printf("Длина диапазона: %.2f%n", range1.getLength());
