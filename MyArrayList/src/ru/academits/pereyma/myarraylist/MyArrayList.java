@@ -4,7 +4,7 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 
 public class MyArrayList<E> implements List<E> {
-    private E[] items;
+    private Object[] items;
     private int length;
 
     @Override
@@ -19,7 +19,7 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean contains(Object o) {
-        for (E e : items) {
+        for (Object e : items) {
             if (e.equals(o)) {
                 return true;
             }
@@ -35,38 +35,71 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public Object[] toArray() {
-        Object[] result = new Object[length];
-
-        if (length >= 0) {
-            System.arraycopy(items, 0, result, 0, length);
-        }
-
-        return result;
+        return Arrays.copyOf(items, length);
     }
 
     @Override
     public <T> T[] toArray(T[] a) {
-        return new T[5];
+        if (a.length < length) {
+            return (T[]) Arrays.copyOf(items, length);
+        }
+
+        for (int i = 0; i < length; ++i) {
+            a[i] = (T) items[i];
+
+            if (a.length > length) {
+                a[++i] = null;
+            }
+        }
+
+        return a;
+    }
+
+    public void increaseCapacity() {
+        items = Arrays.copyOf(items, items.length * 2);
     }
 
     @Override
     public boolean add(E e) {
-        return false;
+        if (length >= items.length) {
+            increaseCapacity();
+        }
+
+        items[++length] = e;
+
+        ++length;
+        return true;
     }
 
     @Override
     public boolean remove(Object o) {
+        for (int i = 0; i < length; ++i) {
+            if (items[i].equals(o)) {
+                System.arraycopy(items, i + 1, items, i, length - i - 1);
+
+                return true;
+            }
+        }
+
         return false;
     }
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        return false;
+        while (items.length <= length + c.size()) {
+            increaseCapacity();
+        }
+
+        System.arraycopy(c.toArray(), 0, items, length, c.size());
+
+        length +=c.size();
+
+        return true;
     }
 
     @Override
@@ -76,7 +109,8 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+
+        return true;
     }
 
     @Override
@@ -91,12 +125,12 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public void sort(Comparator<? super E> c) {
-
+        Arrays.sort((E[])items, c);
     }
 
     @Override
     public void clear() {
-
+        length = 0;
     }
 
     @Override
