@@ -4,7 +4,7 @@ public class SinglyLinkedList<T> {
     private ListItem<T> head;
     private int count;
 
-    public int getCount() {
+    public int getSize() {
         return count;
     }
 
@@ -13,6 +13,10 @@ public class SinglyLinkedList<T> {
     }
 
     public T getItemData(int index) {
+        if (index < 0 || index >= count) {
+            throw new IndexOutOfBoundsException("Index is out of list range");
+        }
+
         ListItem<T> temp = head;
 
         for (int i = 0; i < index; ++i) {
@@ -23,29 +27,41 @@ public class SinglyLinkedList<T> {
     }
 
     public T setItemData(int index, T data) {
+        if (index < 0 || index >= count) {
+            throw new IndexOutOfBoundsException("Index is out of list range");
+        }
+
         ListItem<T> temp = head;
 
         for (int i = 0; i < index; ++i) {
             temp = temp.getNext();
-
         }
 
-        T tempData = temp.getData();
+        T initialData = temp.getData();
         temp.setData(data);
 
-        return tempData;
+        return initialData;
     }
 
     public T removeItem(int index) {
-        ListItem<T> temp = head;
-        ListItem<T> prev = null;
-
-        for (int i = 0; i < index; ++i) {
-            prev = temp;
-            temp = temp.getNext();
+        if (index < 0 || index >= count) {
+            throw new IndexOutOfBoundsException("Index is out of list range");
         }
 
-        prev.setNext(temp.getNext());
+        ListItem<T> temp = head;
+
+        if (index == 0) {
+            head = head.getNext();
+        } else {
+            ListItem<T> prev = null;
+
+            for (int i = 0; i < index; ++i) {
+                prev = temp;
+                temp = temp.getNext();
+            }
+
+            prev.setNext(temp.getNext());
+        }
 
         --count;
         return temp.getData();
@@ -59,31 +75,42 @@ public class SinglyLinkedList<T> {
     }
 
     public void insertItem(int index, ListItem<T> listItem) {
-        ListItem<T> temp = head;
-        ListItem<T> prev = null;
-
-        for (int i = 0; i < index; ++i) {
-            prev = temp;
-            temp = temp.getNext();
+        if (index < 0 || index >= count) {
+            throw new IndexOutOfBoundsException("Index is out of list range");
         }
 
-        prev.setNext(listItem);
-        listItem.setNext(temp);
+        ListItem<T> temp = head;
+
+        if (index == 0) {
+            listItem.setNext(head);
+            head = listItem;
+        } else {
+            ListItem<T> prev = null;
+
+            for (int i = 0; i < index; ++i) {
+                prev = temp;
+                temp = temp.getNext();
+            }
+
+            prev.setNext(listItem);
+            listItem.setNext(temp);
+        }
 
         ++count;
     }
 
     public boolean removeItem(T data) {
-        ListItem<T> temp = head;
-
-        for (int i = 0; i < count; ++i) {
+        for (ListItem<T> temp = head, prev = null; temp != null; prev = temp, temp = temp.getNext()) {
             if (temp.getData().equals(data)) {
-                removeItem(i);
+                if (prev != null) {
+                    prev.setNext(temp.getNext());
+                } else {
+                    head = temp.getNext();
+                }
 
+                --count;
                 return true;
             }
-
-            temp = temp.getNext();
         }
 
         return false;
@@ -94,31 +121,41 @@ public class SinglyLinkedList<T> {
         head = head.getNext();
 
         --count;
-
         return data;
     }
 
     public void invert() {
-        ListItem<T> prev = head;
-        ListItem<T> temp = head.getNext();
+        ListItem<T> prev = null;
+        ListItem<T> temp = head;
+        ListItem<T> next = head.getNext();
 
-        prev.setNext(null);
-
-        ListItem<T> next = temp.getNext();
-
-        for (int i = 0; i < count; ++i) {
+        while (next != null) {
             temp.setNext(prev);
             prev = temp;
             temp = next;
             next = temp.getNext();
-            }
+        }
+
+        temp.setNext(prev);
+        head = temp;
     }
 
     public SinglyLinkedList<T> copy() {
-        SinglyLinkedList<T> result = new SinglyLinkedList<T>();
+        SinglyLinkedList<T> resultList = new SinglyLinkedList<>();
 
+        if (count > 0) {
+            resultList.head = new ListItem<>(head.getData());
+            resultList.count = 1;
 
-        return result;
+            for (ListItem<T> sourceItem = head.getNext(), resultItem = resultList.head; sourceItem != null; sourceItem = sourceItem.getNext()) {
+                resultItem.setNext(new ListItem<>(sourceItem.getData()));
+                resultItem = resultItem.getNext();
+
+                ++resultList.count;
+            }
+        }
+
+        return resultList;
     }
 
     @Override
