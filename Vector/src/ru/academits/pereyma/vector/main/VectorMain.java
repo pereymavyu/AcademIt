@@ -34,7 +34,7 @@ public class VectorMain {
         Проверка нестатических методов;
          */
 
-        System.out.println(vector1.sum(vector2)); // [1, 2, 3, 0]
+        System.out.println(vector1.add(vector2)); // [1, 2, 3, 0]
 
         System.out.println(vector4.equals(vector3)); // true
 
@@ -59,7 +59,7 @@ public class VectorMain {
                 new Vector(new double[]{1, 2, 3, 0})
         )); // [2, 4, 6, 0]
 
-        System.out.println(Vector.getSub(
+        System.out.println(Vector.getDifference(
                 new Vector(new double[]{1, 2, 3}),
                 new Vector(new double[]{1, 2, 4, 0})
         )); // [0, 0, -1, 0]
