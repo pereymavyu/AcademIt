@@ -17,7 +17,31 @@ public class Triangle implements Shape {
         this.y3 = y3;
     }
 
-    private double getSideLength(double x1, double y1, double x2, double y2) {
+    public double getX1() {
+        return x1;
+    }
+
+    public double getY1() {
+        return y1;
+    }
+
+    public double getX2() {
+        return x2;
+    }
+
+    public double getY2() {
+        return y2;
+    }
+
+    public double getX3() {
+        return x3;
+    }
+
+    public double getY3() {
+        return y3;
+    }
+
+    private static double getSideLength(double x1, double y1, double x2, double y2) {
         return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1), 2));
     }
 
@@ -33,13 +57,13 @@ public class Triangle implements Shape {
 
     @Override
     public double getArea() {
-        double sideLength1 = getSideLength(x1, y1, x2, y2);
-        double sideLength2 = getSideLength(x1, y1, x3, y3);
-        double sideLength3 = getSideLength(x2, y2, x3, y3);
+        double side1Length = getSideLength(x1, y1, x2, y2);
+        double side2Length = getSideLength(x1, y1, x3, y3);
+        double side3Length = getSideLength(x2, y2, x3, y3);
 
-        double semiPerimeter = (sideLength1 + sideLength2 + sideLength3) / 2;
+        double semiPerimeter = (side1Length + side2Length + side3Length) / 2;
 
-        return Math.sqrt(semiPerimeter * (semiPerimeter - sideLength1) * (semiPerimeter - sideLength2) * (semiPerimeter - sideLength3));
+        return Math.sqrt(semiPerimeter * (semiPerimeter - side1Length) * (semiPerimeter - side2Length) * (semiPerimeter - side3Length));
     }
 
     @Override
