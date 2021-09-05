@@ -1,9 +1,7 @@
 package ru.academits.pereyma.matrix.main;
 
 import ru.academits.pereyma.matrix.Matrix;
-import ru.academits.pereyma.matrix.Vector;
-
-import java.util.Arrays;
+import ru.academits.pereyma.vector.Vector;
 
 public class MatrixMain {
     public static void main(String[] args) {
@@ -28,9 +26,8 @@ public class MatrixMain {
         Проверка нестатик методов
          */
 
-        System.out.println(Arrays.toString(matrix1.getSizes())); // [4, 4]
-        System.out.println(matrix1.getRowsNumber()); // 4
-        System.out.println(matrix1.getColumnsNumber()); // 4
+        System.out.println(matrix1.getRowsAmount()); // 4
+        System.out.println(matrix1.getColumnsAmount()); // 4
 
         System.out.println("===");
 
@@ -51,7 +48,7 @@ public class MatrixMain {
         System.out.println("===");
 
         System.out.println(matrix1.getDeterminant());
-        System.out.println(matrix3.getVectorProduct(new Vector(new double[]{2, 2, 2})));
+        System.out.println(matrix3.getProduct(new Vector(new double[]{2, 2, 2})));
 
         System.out.println("===");
 
