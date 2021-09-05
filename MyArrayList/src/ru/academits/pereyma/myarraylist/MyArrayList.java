@@ -1,13 +1,12 @@
 package ru.academits.pereyma.myarraylist;
 
 import java.util.*;
-import java.util.function.UnaryOperator;
 
 public class MyArrayList<E> implements List<E> {
     private Object[] items;
     private int size;
     private static final int DEFAULT_CAPACITY = 10;
-    private int modCount;
+    private int modCount = 0;
 
     public MyArrayList() {
         items = new Object[DEFAULT_CAPACITY];
@@ -33,8 +32,8 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean contains(Object o) {
-        for (Object e : items) {
-            if (Objects.equals(o, e)) {
+        for (int i = 0; i < size; ++i) {
+            if (Objects.equals(o, items[i])) {
                 return true;
             }
         }
@@ -49,7 +48,7 @@ public class MyArrayList<E> implements List<E> {
 
     private class MyListIterator implements Iterator<E> {
         private int currentIndex = -1;
-        private int initialModCount = modCount;
+        private final int expectedModCount = modCount;
 
         @Override
         public boolean hasNext() {
@@ -58,15 +57,17 @@ public class MyArrayList<E> implements List<E> {
 
         @Override
         public E next() {
+            if (expectedModCount != modCount) {
+                throw new ConcurrentModificationException();
+            }
+
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
 
-            if (initialModCount != modCount) {
-                throw new ConcurrentModificationException();
-            }
-
             ++currentIndex;
+
+            //noinspection unchecked
             return (E) items[currentIndex];
         }
     }
@@ -79,15 +80,14 @@ public class MyArrayList<E> implements List<E> {
     @Override
     public <T> T[] toArray(T[] a) {
         if (a.length < size) {
-            return (T[]) Arrays.copyOf(items, size);
+            //noinspection unchecked
+            return (T[]) Arrays.copyOf(items, size, a.getClass());
         }
 
-        for (int i = 0; i < size; ++i) {
-            a[i] = (T) items[i];
+        System.arraycopy(items, 0, a, 0, size);
 
-            if (a.length > size) {
-                a[i + 1] = null;
-            }
+        if (a.length > size) {
+            a[size] = null;
         }
 
         return a;
@@ -224,7 +224,7 @@ public class MyArrayList<E> implements List<E> {
         if (index < 0 || index >= size) {
             throw new IllegalArgumentException("Index must be greater than 0 and less than List size");
         }
-        return (E)items[index];
+        return (E) items[index];
     }
 
     @Override
@@ -251,7 +251,7 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public E remove(int index) {
-        E temp = (E)items[index];
+        E temp = (E) items[index];
         System.arraycopy(items, index, items, index - 1, size - index);
 
         --size;
@@ -261,7 +261,7 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public int indexOf(Object o) {
-        for(int i = 0; i < size; ++i) {
+        for (int i = 0; i < size; ++i) {
             if (Objects.equals(o, items[i])) {
                 return i;
             }
@@ -272,7 +272,7 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public int lastIndexOf(Object o) {
-        for(int i = size - 1; i >= 0; --i) {
+        for (int i = size - 1; i >= 0; --i) {
             if (Objects.equals(o, items[i])) {
                 return i;
             }
