@@ -3,13 +3,15 @@ package ru.academits.pereyma.myarraylist;
 import java.util.*;
 
 public class MyArrayList<E> implements List<E> {
-    private Object[] items;
-    private int size;
     private static final int DEFAULT_CAPACITY = 10;
-    private int modCount = 0;
+
+    private E[] items;
+    private int size;
+    private int modCount;
 
     public MyArrayList() {
-        items = new Object[DEFAULT_CAPACITY];
+        //noinspection unchecked
+        items = (E[]) new Object[DEFAULT_CAPACITY];
     }
 
     public MyArrayList(int capacity) {
@@ -17,7 +19,8 @@ public class MyArrayList<E> implements List<E> {
             throw new IllegalArgumentException("Capacity must be one or greater");
         }
 
-        items = new Object[capacity];
+        //noinspection unchecked
+        items = (E[]) new Object[capacity];
     }
 
     @Override
@@ -67,8 +70,7 @@ public class MyArrayList<E> implements List<E> {
 
             ++currentIndex;
 
-            //noinspection unchecked
-            return (E) items[currentIndex];
+            return items[currentIndex];
         }
     }
 
@@ -84,6 +86,7 @@ public class MyArrayList<E> implements List<E> {
             return (T[]) Arrays.copyOf(items, size, a.getClass());
         }
 
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(items, 0, a, 0, size);
 
         if (a.length > size) {
@@ -97,6 +100,10 @@ public class MyArrayList<E> implements List<E> {
         items = Arrays.copyOf(items, items.length * 2);
     }
 
+    public void trimToSize() {
+        items = Arrays.copyOf(items, size);
+    }
+
     @Override
     public boolean add(E e) {
         if (size >= items.length) {
@@ -106,6 +113,8 @@ public class MyArrayList<E> implements List<E> {
         items[size] = e;
 
         ++size;
+        ++modCount;
+
         return true;
     }
 
@@ -116,6 +125,8 @@ public class MyArrayList<E> implements List<E> {
                 System.arraycopy(items, i + 1, items, i, size - i - 1);
 
                 --size;
+                ++modCount;
+
                 return true;
             }
         }
@@ -140,24 +151,31 @@ public class MyArrayList<E> implements List<E> {
             increaseCapacity();
         }
 
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(c.toArray(), 0, items, size, c.size());
 
         size += c.size();
+        ++modCount;
 
         return true;
     }
 
     @Override
-
     public boolean addAll(int index, Collection<? extends E> c) {
+        if (index < 0 || index > size) {
+            throw new IllegalArgumentException("Index " + index + " must be greater than 0 and not greater than list size " + size);
+        }
+
         while (items.length < size + c.size()) {
             increaseCapacity();
         }
 
-        System.arraycopy(items, index, items, index + c.size(), c.size());
+        System.arraycopy(items, index, items, index + c.size(), size - index);
+        //noinspection SuspiciousSystemArraycopy
         System.arraycopy(c.toArray(), 0, items, index, c.size());
 
         size += c.size();
+        ++modCount;
 
         return true;
     }
@@ -169,10 +187,12 @@ public class MyArrayList<E> implements List<E> {
         for (Object e : c) {
             for (int i = 0; i < size; ++i) {
                 if (Objects.equals(e, items[i])) {
-                    System.arraycopy(items, i + 1, items, i, size - i + 1);
-                    --i;
+                    System.arraycopy(items, i + 1, items, i, size - i - 1);
 
+                    --i;
                     --size;
+                    ++modCount;
+
                     isChanged = true;
                 }
             }
@@ -187,10 +207,11 @@ public class MyArrayList<E> implements List<E> {
 
         for (int i = 0; i < size; ++i) {
             if (!c.contains(items[i])) {
-                System.arraycopy(items, i + 1, items, i, size - i + 1);
-                --i;
+                System.arraycopy(items, i + 1, items, i, size - i - 1);
 
+                --i;
                 --size;
+                ++modCount;
                 isChanged = true;
             }
         }
@@ -206,57 +227,94 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MyArrayList<?> that = (MyArrayList<?>) o;
-        return size == that.size && Arrays.equals(items, that.items);
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof List) || size != ((List<?>) o).size()) {
+            return false;
+        }
+
+        int i = 0;
+
+        for (Object e : (List<?>) o) {
+            if (!Objects.equals(e, items[i])) {
+                return false;
+            }
+
+            ++i;
+        }
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(size);
-        result = 31 * result + Arrays.hashCode(items);
-        return result;
+        int hashCode = 1;
+        for (E e : this) {
+            hashCode = 31 * hashCode + (e == null ? 0 : e.hashCode());
+        }
+
+        return hashCode;
     }
 
     @Override
     public E get(int index) {
         if (index < 0 || index >= size) {
-            throw new IllegalArgumentException("Index must be greater than 0 and less than List size");
+            throw new IllegalArgumentException("Index " + index + "must be >= 0 and less than List size " + size);
         }
-        return (E) items[index];
+
+        return items[index];
     }
 
     @Override
     public E set(int index, E element) {
         if (index < 0 || index >= size) {
-            throw new IllegalArgumentException("Index must be greater than 0 and less than List size");
+            throw new IllegalArgumentException("Index " + index + " must be >= 0 and less than List size " + size);
         }
 
-        E temp = (E) items[index];
+        E oldElement = items[index];
         items[index] = element;
-        return temp;
+
+        return oldElement;
     }
 
     @Override
     public void add(int index, E element) {
+        if (index < 0 || index > size) {
+            throw new IllegalArgumentException("Index " + index + " must be >= 0 and not greater than list size " + size);
+        }
+
         if (items.length <= size) {
             increaseCapacity();
         }
 
-        System.arraycopy(items, index, items, index + 1, size - index + 1);
+        if (index != size) {
+            System.arraycopy(items, index, items, index + 1, size - index);
+        }
+
         items[index] = element;
+
         ++size;
+        ++modCount;
     }
 
     @Override
     public E remove(int index) {
-        E temp = (E) items[index];
-        System.arraycopy(items, index, items, index - 1, size - index);
+        if (index < 0 || index >= size) {
+            throw new IllegalArgumentException("Index " + index + " must be >= 0 and less than List size " + size);
+        }
+
+        E oldElement = items[index];
+
+        if (index != size - 1) {
+            System.arraycopy(items, index + 1, items, index, size - index - 1);
+        }
 
         --size;
+        ++modCount;
 
-        return temp;
+        return oldElement;
     }
 
     @Override
@@ -298,10 +356,18 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public String toString() {
-        return "MyArrayList{" +
-                "items=" + Arrays.toString(items) +
-                ", size=" + size +
-                ", modCount=" + modCount +
-                '}';
+        if (size == 0) {
+            return "[]";
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("[");
+
+        for (int i = 0; i < size - 1; ++i) {
+            sb.append(items[i]).append(", ");
+        }
+
+        return sb.append(items[size - 1]).append("]").toString();
     }
 }

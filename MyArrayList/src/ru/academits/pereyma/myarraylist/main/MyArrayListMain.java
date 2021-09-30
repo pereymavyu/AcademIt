@@ -3,34 +3,70 @@ package ru.academits.pereyma.myarraylist.main;
 import ru.academits.pereyma.myarraylist.MyArrayList;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 public class MyArrayListMain {
     public static void main(String[] args) {
-        MyArrayList<Integer> list = new MyArrayList<>();
+        MyArrayList<Integer> list1 = new MyArrayList<>(1);
 
-        list.add(1);
-        list.add(2);
-        list.add(3);
-        list.add(4);
-        System.out.println(list);
+        list1.add(1);
+        list1.add(2);
+        list1.add(null);
+        list1.add(3);
+        list1.add(4);
+        list1.add(5);
 
-        Integer[] i = new Integer[]{1, 1};
-        System.out.println(Arrays.toString(i));
+        System.out.println(list1);
+        System.out.println(list1.size());
+        System.out.println(list1.isEmpty());
+        System.out.println(list1.contains(null));
+        System.out.println(Arrays.toString(list1.toArray()));
+        System.out.println(Arrays.toString(list1.toArray(new Integer[]{0, 0})));
+        list1.trimToSize();
+        System.out.println(list1);
 
-        Integer[] i1 = list.toArray(i);
+        System.out.println("=====");
 
-        System.out.println(Arrays.toString(i));
-        System.out.println(Arrays.toString(i1));
+        System.out.println(list1.remove(Integer.valueOf(7)));
+        System.out.println(list1.remove(2));
+        System.out.println(list1);
+        System.out.println(list1.size());
 
-        System.out.println("===");
+        MyArrayList<Integer> list2 = new MyArrayList<>();
 
-        String[] s = new String[]{"abs", "abs"};
-        System.out.println(Arrays.toString(s));
+        list2.add(1);
+        list2.add(2);
+        list2.add(3);
+        list2.add(4);
 
-        String[] s1 = list.toArray(s);
+        System.out.println(list1.containsAll(list2));
+        System.out.println(list1.retainAll(list2));
+        System.out.println(list1);
 
-        System.out.println(Arrays.toString(s));
-        System.out.println(Arrays.toString(s1));
+        System.out.println("=====");
 
+        LinkedList<Integer> list3 = new LinkedList<>(Arrays.asList(1, 2, 3, 4));
+        System.out.println(list1.equals(list3));
+        System.out.println(list1.hashCode());
+        System.out.println(list2.hashCode());
+        System.out.println(list3.hashCode());
+
+        list1.add(0, null);
+
+        System.out.println(list1.get(0));
+        System.out.println(list1);
+        System.out.println(list1.set(4, 0));
+        System.out.println(list1);
+        list1.add(0, 5);
+        System.out.println(list1);
+
+        System.out.println("=====");
+
+        list1.add(null);
+        list1.add(null);
+        list1.remove(0);
+        System.out.println(list1);
+
+        System.out.println(list1.lastIndexOf(7));
     }
 }
