@@ -15,6 +15,7 @@ public class Tree<T extends Comparable<T>> {
         ++size;
     }
 
+    //функция getHead используется для получения ссылки на head для использования в рекурсивном обходе дерева
     public TreeNode<T> getHead() {
         return head;
     }
