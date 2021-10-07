@@ -12,7 +12,6 @@ public class TemparatureMain {
 
                 TemperatureView view = new TemperatureView();
                 view.setModel(model);
-
             }
         });
     }
