@@ -6,6 +6,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Enumeration;
 
+import static java.awt.Component.LEFT_ALIGNMENT;
+import static java.awt.Component.RIGHT_ALIGNMENT;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+
 public class TemperatureView {
     private TemperatureModel model;
 
@@ -16,14 +20,26 @@ public class TemperatureView {
     public TemperatureView() {
         JFrame frame = new JFrame("Temperature Converter");
         frame.setSize(500, 500);
-        frame.getContentPane().setLayout(new FlowLayout());
+
+        GridLayout experimentLayout = new GridLayout(3, 1);
+
+        frame.getContentPane().setLayout(experimentLayout);
+        //new BoxLayout(frame, BoxLayout.Y_AXIS);
+        JPanel panel1 = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        JPanel panel2 = new JPanel(new FlowLayout(FlowLayout.LEADING));
+        JPanel panel3 = new JPanel(new FlowLayout(FlowLayout.LEADING));
+
+        frame.add(panel1);
+        frame.add(panel2);
+        frame.add(panel3);
+
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JLabel inputTemperatureLabel = new JLabel("Введите температуру");
-        frame.add(inputTemperatureLabel);
+        panel1.add(inputTemperatureLabel);
 
         JTextField userInputField = new JTextField(20);
-        frame.add(userInputField);
+        panel1.add(userInputField);
 
         ButtonGroup inputTemperatureOptions = new ButtonGroup();
         JRadioButton inputTemperatureCelcius = new JRadioButton("Celcius", true);
@@ -33,23 +49,23 @@ public class TemperatureView {
         inputTemperatureOptions.add(inputTemperatureCelcius);
         inputTemperatureOptions.add(inputTemperatureFahrenheits);
         inputTemperatureOptions.add(inputTemperatureKelvins);
-        frame.add(inputTemperatureCelcius);
-        frame.add(inputTemperatureFahrenheits);
-        frame.add(inputTemperatureKelvins);
+        panel1.add(inputTemperatureCelcius);
+        panel1.add(inputTemperatureFahrenheits);
+        panel1.add(inputTemperatureKelvins);
 
 
         JLabel resultTemperature = new JLabel("Результат перевода температуры");
-        frame.add(resultTemperature);
+        resultTemperature.setAlignmentX(RIGHT_ALIGNMENT);
+        panel3.add(resultTemperature);
 
         JTextField userOutputField = new JTextField(20);
         userOutputField.setEditable(false);
-        frame.add(userOutputField);
+        panel3.add(userOutputField);
 
 
         JButton convertButton = new JButton("Convert");
 
-
-        frame.add(convertButton);
+        panel2.add(convertButton);
 
         ButtonGroup outputTemperatureOptions = new ButtonGroup();
         JRadioButton outputTemperatureCelcius = new JRadioButton("Celcius");
@@ -59,15 +75,20 @@ public class TemperatureView {
         outputTemperatureOptions.add(outputTemperatureCelcius);
         outputTemperatureOptions.add(outputTemperatureFahrenheits);
         outputTemperatureOptions.add(outputTemperatureKelvins);
-        frame.add(outputTemperatureCelcius);
-        frame.add(outputTemperatureFahrenheits);
-        frame.add(outputTemperatureKelvins);
+        panel3.add(outputTemperatureCelcius);
+        panel3.add(outputTemperatureFahrenheits);
+        panel3.add(outputTemperatureKelvins);
 
 
         class ButtonListener implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent e) {
-                double inputTemp = Double.parseDouble(userInputField.getText());
+                double inputTemp = 0;
+                try {
+                    inputTemp = Double.parseDouble(userInputField.getText());
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frame, "Пожалуйста, введите число", "Ошибка", WARNING_MESSAGE);
+                }
 
                 if (inputTemperatureCelcius.isSelected()) {
                     model.setOldScale(TemperatureScales.CELCIUS);
