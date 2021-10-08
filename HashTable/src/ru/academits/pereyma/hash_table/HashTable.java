@@ -1,33 +1,25 @@
-package ru.academits.pereyma.hashtable;
+package ru.academits.pereyma.hash_table;
 
 import java.util.*;
 
 public class HashTable<E> implements Collection<E> {
-    private final List<E>[] hashTable;
-    private static final int DEFAULT_HASHTABLE_SIZE = 10;
-    private int modCount = 0;
+    private static final int DEFAULT_ARRAY_SIZE = 10;
+
+    private final List<E>[] array;
+    private int size;
+    private int modCount;
 
     public HashTable() {
-        this(DEFAULT_HASHTABLE_SIZE);
+        this(DEFAULT_ARRAY_SIZE);
     }
 
-    public HashTable(int hashTableSize) {
+    public HashTable(int arraySize) {
         //noinspection unchecked
-        hashTable = (ArrayList<E>[]) (new ArrayList<?>[hashTableSize]);
+        array = (ArrayList<E>[]) new ArrayList<?>[arraySize];
     }
 
     @Override
     public int size() {
-        int size = 0;
-
-        for (List<E> e : hashTable) {
-            if (e == null) {
-                continue;
-            }
-
-            size += e.size();
-        }
-
         return size;
     }
 
@@ -36,23 +28,19 @@ public class HashTable<E> implements Collection<E> {
         return size() == 0;
     }
 
-    private int getNormalizedHashCode(Object o) {
-        return Math.abs(o.hashCode() % hashTable.length);
+    private int getIndex(Object o) {
+        if (o == null) {
+            return 0;
+        }
+
+        return Math.abs(o.hashCode() % array.length);
     }
 
     @Override
     public boolean contains(Object o) {
-        if (o == null) {
-            return false;
-        }
+        int index = getIndex(o);
 
-        int normalizedHashCode = getNormalizedHashCode(o);
-
-        if (hashTable[normalizedHashCode] == null) {
-            return false;
-        }
-
-        return hashTable[normalizedHashCode].contains(o);
+        return array[index] != null && array[index].contains(o);
     }
 
     @Override
@@ -60,7 +48,7 @@ public class HashTable<E> implements Collection<E> {
         return new MyHashTableIterator();
     }
 
-    private class MyHashTableIterator implements Iterator<E> {
+    private class MyHashTableIterator implements Iterator<E> {                                  // TO DO
         private int currentIndex = -1;
         private final int expectedModCount = modCount;
 
@@ -84,15 +72,15 @@ public class HashTable<E> implements Collection<E> {
             int itemIndex = currentIndex;
             int listIndex = 0;
 
-            for (; hashTable[listIndex] == null || itemIndex >= hashTable[listIndex].size(); ++listIndex) {
-                if (hashTable[listIndex] == null) {
+            for (; array[listIndex] == null || itemIndex >= array[listIndex].size(); ++listIndex) {
+                if (array[listIndex] == null) {
                     continue;
                 }
 
-                itemIndex -= hashTable[listIndex].size();
+                itemIndex -= array[listIndex].size();
             }
 
-            return hashTable[listIndex].get(itemIndex);
+            return array[listIndex].get(itemIndex);
         }
     }
 
@@ -100,17 +88,12 @@ public class HashTable<E> implements Collection<E> {
     public Object[] toArray() {
         Object[] resultingArray = new Object[size()];
 
-        int copiedItemsAmount = 0;
+        int i = 0;
 
-        for (List<E> e : hashTable) {
-            if (e == null) {
-                continue;
-            }
+        for (E e : this) {
+            resultingArray[i] = e;
 
-            Object[] arrayFromCurrentList = e.toArray();
-            System.arraycopy(arrayFromCurrentList, 0, resultingArray, copiedItemsAmount, arrayFromCurrentList.length);
-
-            copiedItemsAmount += arrayFromCurrentList.length;
+            ++i;
         }
 
         return resultingArray;
@@ -118,19 +101,20 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public <T> T[] toArray(T[] a) {
-        if (a.length < size()) {
+        if (a.length < size()) {                                                      //TO DO
             //noinspection unchecked
             return (T[]) toArray();
         }
 
         int copiedItemsAmount = 0;
 
-        for (List<E> e : hashTable) {
+        for (List<E> e : array) {
             if (e == null) {
                 continue;
             }
 
-            @SuppressWarnings("unchecked") T[] arrayFromCurrentList = (T[]) e.toArray();
+            //noinspection unchecked
+            T[] arrayFromCurrentList = (T[]) e.toArray();
             System.arraycopy(arrayFromCurrentList, 0, a, copiedItemsAmount, arrayFromCurrentList.length);
 
             copiedItemsAmount += arrayFromCurrentList.length;
@@ -145,28 +129,30 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public boolean add(E e) {
-        int normalizedHashCode = getNormalizedHashCode(e);
+        int index = getIndex(e);
 
-        if (hashTable[normalizedHashCode] == null) {
-            hashTable[normalizedHashCode] = new ArrayList<>();
+        if (array[index] == null) {
+            array[index] = new ArrayList<>();
         }
 
+        ++size;
         ++modCount;
 
-        return hashTable[normalizedHashCode].add(e);
+        return array[index].add(e);
     }
 
     @Override
     public boolean remove(Object o) {
-        int normalizedHashCode = getNormalizedHashCode(o);
+        int index = getIndex(o);
 
-        if (hashTable[normalizedHashCode] == null) {
+        if (array[index] == null) {
             return false;
         }
 
+        --size;
         ++modCount;
 
-        return hashTable[normalizedHashCode].remove(o);
+        return array[index].remove(o);
     }
 
     @Override
@@ -182,15 +168,13 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
-        if (c.contains(null)) {
-            throw new NullPointerException("Adding null items to HashTable is not allowed");
+        if (c.size() == 0) {
+            return false;
         }
 
         for (E e : c) {
             add(e);
         }
-
-        ++modCount;
 
         return true;
     }
@@ -205,23 +189,19 @@ public class HashTable<E> implements Collection<E> {
             }
         }
 
-        if (isChanged) {
-            ++modCount;
-        }
-
         return isChanged;
     }
 
     @Override
-    public boolean retainAll(Collection<?> c) {
+    public boolean retainAll(Collection<?> c) {                           //TO DO
         boolean isChanged = false;
 
         for (E e : this) {
             if (!c.contains(e)) {
-                int normalizedHashCode = getNormalizedHashCode(e);
+                int index = getIndex(e);
 
-                while (hashTable[normalizedHashCode].contains(e)) {
-                    hashTable[normalizedHashCode].remove(e);
+                while (array[index].contains(e)) {
+                    array[index].remove(e);
                 }
 
                 isChanged = true;
@@ -237,15 +217,20 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public void clear() {
-        for (List<E> e : hashTable) {
+        if (size == 0) {
+            return;
+        }
+
+        for (List<E> e : array) {
             e.clear();
         }
 
+        size = 0;
         ++modCount;
     }
 
     @Override
     public String toString() {
-        return "HashTable" + Arrays.toString(hashTable);
+        return "HashTable" + Arrays.toString(array);
     }
 }
