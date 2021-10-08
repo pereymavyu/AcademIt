@@ -85,7 +85,6 @@ public class TemperatureView extends JFrame {
 
             int indexOut = outputTemperatureScalesList.getSelectedIndex();
 
-
             if (indexOut == 0) {
                 model.setOutputTemperatureScale(TemperatureScales.CELSIUS);
             } else if (indexOut == 1) {
