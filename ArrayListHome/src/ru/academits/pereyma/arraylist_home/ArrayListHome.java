@@ -31,8 +31,8 @@ public class ArrayListHome {
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
-            while ((currentLine = reader.readLine()) != null) {
 
+            while ((currentLine = reader.readLine()) != null) {
                 strings.add(currentLine);
             }
         } catch (FileNotFoundException ex) {
