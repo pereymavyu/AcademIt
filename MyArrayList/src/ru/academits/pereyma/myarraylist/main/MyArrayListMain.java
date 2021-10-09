@@ -3,7 +3,6 @@ package ru.academits.pereyma.myarraylist.main;
 import ru.academits.pereyma.myarraylist.MyArrayList;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 
 public class MyArrayListMain {
     public static void main(String[] args) {
@@ -21,7 +20,7 @@ public class MyArrayListMain {
         System.out.println(list1.isEmpty());
         System.out.println(list1.contains(null));
         System.out.println(Arrays.toString(list1.toArray()));
-        System.out.println(Arrays.toString(list1.toArray(new Integer[]{0, 0})));
+        System.out.println(Arrays.toString(list1.toArray(new Integer[]{0, 0, 0, 0, 0, 0, 0, 0})));
         list1.trimToSize();
         System.out.println(list1);
 
@@ -45,11 +44,9 @@ public class MyArrayListMain {
 
         System.out.println("=====");
 
-        LinkedList<Integer> list3 = new LinkedList<>(Arrays.asList(1, 2, 3, 4));
-        System.out.println(list1.equals(list3));
+        System.out.println(list2.equals(list1));
         System.out.println(list1.hashCode());
         System.out.println(list2.hashCode());
-        System.out.println(list3.hashCode());
 
         list1.add(0, null);
 
@@ -67,6 +64,6 @@ public class MyArrayListMain {
         list1.remove(0);
         System.out.println(list1);
 
-        System.out.println(list1.lastIndexOf(7));
+        System.out.println(list1.lastIndexOf(1));
     }
 }
