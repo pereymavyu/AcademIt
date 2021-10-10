@@ -3,40 +3,48 @@ package ru.academits.pereyma.tree;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class Tree<T extends Comparable<T>> {
-    private TreeNode<T> head;
+public class Tree<T> {
+    private TreeNode<T> root;
     private int size;
+    private Comparator<? super T> comparator;
 
     public Tree() {
     }
 
-    public Tree(T data) {
-        head = new TreeNode<>(data);
-        ++size;
+    public Tree(Comparator<? super T> comparator) {
+        this.comparator = comparator;
     }
 
-    //функция getHead используется для получения ссылки на head для использования в рекурсивном обходе дерева
-    public TreeNode<T> getHead() {
-        return head;
+    private int compareTreeNodesData(T data1, T data2) {
+        if (comparator != null) {
+            return comparator.compare(data1, data2);
+        }
+
+        //noinspection unchecked
+        return ((Comparable<T>) data1).compareTo(data2);
+    }
+
+    //функция getRoot нужна для получения ссылки на root для использования в рекурсивном обходе дерева
+    private TreeNode<T> getRoot() {
+        return root;
     }
 
     public int getSize() {
         return size;
     }
 
-    public void wightTraversal(Consumer<TreeNode<T>> consumer) {
-        if (head == null) {
+    public void widthTraversal(Consumer<T> consumer) {
+        if (root == null) {
             return;
         }
 
-        LinkedList<TreeNode<T>> queue = new LinkedList<>();
-        queue.add(head);
+        Queue<TreeNode<T>> queue = new LinkedList<>();
+        queue.add(root);
 
         while (queue.size() > 0) {
-            TreeNode<T> currentNode = queue.getFirst();
-            queue.removeFirst();
+            TreeNode<T> currentNode = queue.remove();
 
-            consumer.accept(currentNode);
+            consumer.accept(currentNode.getData());
 
             if (currentNode.getLeft() != null) {
                 queue.add(currentNode.getLeft());
@@ -48,19 +56,18 @@ public class Tree<T extends Comparable<T>> {
         }
     }
 
-    public void depthTraversal(Consumer<TreeNode<T>> consumer) {
-        if (head == null) {
+    public void depthTraversal(Consumer<T> consumer) {
+        if (root == null) {
             return;
         }
 
-        ArrayList<TreeNode<T>> stack = new ArrayList<>();
-        stack.add(head);
+        ArrayList<TreeNode<T>> stack = new ArrayList<>(size);
+        stack.add(root);
 
-        while (stack.size() > 0) {
-            TreeNode<T> currentNode = stack.get(stack.size() - 1);
-            stack.remove(stack.size() - 1);
+        while (!stack.isEmpty()) {
+            TreeNode<T> currentNode = stack.remove(stack.size() - 1);
 
-            consumer.accept(currentNode);
+            consumer.accept(currentNode.getData());
 
             if (currentNode.getRight() != null) {
                 stack.add(currentNode.getRight());
@@ -72,29 +79,33 @@ public class Tree<T extends Comparable<T>> {
         }
     }
 
-    public void recursiveDepthTraversal(TreeNode<T> node) {
-        System.out.print(node.getData() + " ");
+    public void recursiveDepthTraversal(Consumer<T> consumer) {
+        recursiveVisit(getRoot(), consumer);
+    }
+
+    private void recursiveVisit(TreeNode<T> node, Consumer<T> consumer) {
+        consumer.accept(node.getData());
 
         if (node.getLeft() != null) {
-            recursiveDepthTraversal(node.getLeft());
+            recursiveVisit(node.getLeft(), consumer);
         }
 
         if (node.getRight() != null) {
-            recursiveDepthTraversal(node.getRight());
+            recursiveVisit(node.getRight(), consumer);
         }
     }
 
-    public TreeNode<T> getNode(T data) {
-        if (head == null) {
+    private TreeNode<T> getNode(T data) {
+        if (root == null) {
             return null;
         }
 
-        TreeNode<T> currentNode = head;
+        TreeNode<T> currentNode = root;
 
         for (; ; ) {
-            if (Objects.equals(data, currentNode.getData())) {
+            if (compareTreeNodesData(data, currentNode.getData()) == 0) {
                 return currentNode;
-            } else if (data.compareTo(currentNode.getData()) < 0) {
+            } else if (compareTreeNodesData(data, currentNode.getData()) < 0) {
                 if (currentNode.getLeft() != null) {
                     currentNode = currentNode.getLeft();
                 } else {
@@ -111,17 +122,17 @@ public class Tree<T extends Comparable<T>> {
     }
 
     public void add(T data) {
-        if (head == null) {
-            head = new TreeNode<>(data);
+        if (root == null) {
+            root = new TreeNode<>(data);
 
             ++size;
             return;
         }
 
-        TreeNode<T> currentNode = head;
+        TreeNode<T> currentNode = root;
 
         for (; ; ) {
-            if (data.compareTo(currentNode.getData()) < 0) {
+            if (compareTreeNodesData(data, currentNode.getData()) < 0) {
                 if (currentNode.getLeft() != null) {
                     currentNode = currentNode.getLeft();
                 } else {
@@ -144,19 +155,19 @@ public class Tree<T extends Comparable<T>> {
     }
 
     public boolean remove(T data) {
-        if (head == null) {
+        if (root == null) {
             return false;
         }
 
-        TreeNode<T> currentNode = head;
+        TreeNode<T> currentNode = root;
         TreeNode<T> currentNodeParent = null;
 
         for (; ; ) {
-            if (Objects.equals(data, currentNode.getData())) {
+            if (compareTreeNodesData(data, currentNode.getData()) == 0) {
                 removeNode(currentNode, currentNodeParent);
 
                 return true;
-            } else if (data.compareTo(currentNode.getData()) < 0) {
+            } else if (compareTreeNodesData(data, currentNode.getData()) < 0) {
                 if (currentNode.getLeft() != null) {
                     currentNodeParent = currentNode;
                     currentNode = currentNode.getLeft();
@@ -177,11 +188,11 @@ public class Tree<T extends Comparable<T>> {
     private void removeNode(TreeNode<T> nodeToRemove, TreeNode<T> nodeToRemoveParent) {
         if (nodeToRemoveParent == null) {
             if (nodeToRemove.getLeft() == null && nodeToRemove.getRight() == null) {
-                head = null;
+                root = null;
             } else if ((nodeToRemove.getRight() == null)) {
-                head = nodeToRemove.getLeft();
+                root = nodeToRemove.getLeft();
             } else if ((nodeToRemove.getLeft() == null)) {
-                head = nodeToRemove.getRight();
+                root = nodeToRemove.getRight();
             } else {
                 TreeNode<T> nodeToReplaceParent = nodeToRemove;
                 TreeNode<T> nodeToReplace = nodeToRemove.getRight();
@@ -204,7 +215,7 @@ public class Tree<T extends Comparable<T>> {
                 nodeToReplace.setLeft(nodeToRemove.getLeft());
                 nodeToReplace.setRight(nodeToRemove.getRight());
 
-                head = nodeToReplace;
+                root = nodeToReplace;
             }
         } else {
             if (nodeToRemove.getLeft() == null && nodeToRemove.getRight() == null) {
@@ -260,7 +271,7 @@ public class Tree<T extends Comparable<T>> {
 
     @Override
     public String toString() {
-        if (head == null) {
+        if (root == null) {
             return "[]";
         }
 
@@ -268,8 +279,8 @@ public class Tree<T extends Comparable<T>> {
 
         sb.append("[");
 
-        wightTraversal((x) -> {
-            sb.append(x.getData());
+        widthTraversal(x -> {
+            sb.append(x);
             sb.append(", ");
         });
 

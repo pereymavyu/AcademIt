@@ -1,15 +1,11 @@
 package ru.academits.pereyma.tree;
 
-public class TreeNode<T extends Comparable<T>> {
+class TreeNode<T> {
     private TreeNode<T> left;
     private TreeNode<T> right;
     private final T data;
 
     TreeNode(T data) {
-        if (data == null) {
-            throw new IllegalArgumentException("Data must not be null");
-        }
-
         this.data = data;
     }
 
