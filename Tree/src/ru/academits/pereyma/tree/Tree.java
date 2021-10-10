@@ -20,6 +20,18 @@ public class Tree<T> {
             return comparator.compare(data1, data2);
         }
 
+        if (data1 == null) {
+            if (data2 == null) {
+                return 0;
+            } else {
+                return -1;
+            }
+        }
+
+        if (data2 == null) {
+            return 1;
+        }
+
         //noinspection unchecked
         return ((Comparable<T>) data1).compareTo(data2);
     }
