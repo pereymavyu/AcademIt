@@ -1,4 +1,4 @@
-package ru.academits.pereyma.arraylist_home;
+package ru.academits.pereyma.array_list_home;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -11,9 +11,9 @@ public class ArrayListHome {
     public static void main(String[] args) {
         String filePath = "ArrayListHomeInput.txt";
 
-        ArrayList<String> strings = getStringsFromFile(filePath);
+        ArrayList<String> lines = getLinesFromFile(filePath);
 
-        System.out.println("Строки из файла " + filePath + ": " + strings);
+        System.out.println("Строки из файла " + filePath + ": " + lines);
         System.out.println();
 
         ArrayList<Integer> numbers = new ArrayList<>(Arrays.asList(3, 3, 1, 4, 6, 9, 3, 14, 14, 3, -7, -8, 9, 3, 3));
@@ -26,14 +26,14 @@ public class ArrayListHome {
         System.out.println("Список после удаления четных чисел и дубликатов: " + getListWithoutRepeats(numbers));
     }
 
-    public static ArrayList<String> getStringsFromFile(String filePath) {
-        ArrayList<String> strings = new ArrayList<>();
+    public static ArrayList<String> getLinesFromFile(String filePath) {
+        ArrayList<String> lines = new ArrayList<>();
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String currentLine;
 
             while ((currentLine = reader.readLine()) != null) {
-                strings.add(currentLine);
+                lines.add(currentLine);
             }
         } catch (FileNotFoundException ex) {
             System.out.println("Файл " + filePath + " не найден");
@@ -41,7 +41,7 @@ public class ArrayListHome {
             System.out.println("Ошибка ввода-вывода");
         }
 
-        return strings;
+        return lines;
     }
 
     public static void removeEvenNumbers(ArrayList<Integer> list) {
@@ -55,10 +55,10 @@ public class ArrayListHome {
     }
 
     public static ArrayList<Integer> getListWithoutRepeats(ArrayList<Integer> list) {
-        ArrayList<Integer> listWithoutRepeats = new ArrayList<>();
+        ArrayList<Integer> listWithoutRepeats = new ArrayList<>(list.size());
 
         for (Integer e : list) {
-            if (!(listWithoutRepeats.contains(e))) {
+            if (!listWithoutRepeats.contains(e)) {
                 listWithoutRepeats.add(e);
             }
         }
