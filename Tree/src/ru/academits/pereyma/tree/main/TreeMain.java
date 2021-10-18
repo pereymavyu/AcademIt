@@ -31,7 +31,7 @@ public class TreeMain {
         System.out.println(tree1);
         System.out.println(tree1.getSize());
 
-        System.out.println(tree2.remove("1"));
+        System.out.println(tree2.remove("string1"));
         System.out.println(tree2);
 
         System.out.println("===");

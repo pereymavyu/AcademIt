@@ -15,7 +15,7 @@ public class Tree<T> {
         this.comparator = comparator;
     }
 
-    private int compareTreeNodesData(T data1, T data2) {
+    private int compare(T data1, T data2) {
         if (comparator != null) {
             return comparator.compare(data1, data2);
         }
@@ -34,11 +34,6 @@ public class Tree<T> {
 
         //noinspection unchecked
         return ((Comparable<T>) data1).compareTo(data2);
-    }
-
-    //функция getRoot нужна для получения ссылки на root для использования в рекурсивном обходе дерева
-    private TreeNode<T> getRoot() {
-        return root;
     }
 
     public int getSize() {
@@ -92,7 +87,11 @@ public class Tree<T> {
     }
 
     public void recursiveDepthTraversal(Consumer<T> consumer) {
-        recursiveVisit(getRoot(), consumer);
+        if (size == 0) {
+            return;
+        }
+
+        recursiveVisit(root, consumer);
     }
 
     private void recursiveVisit(TreeNode<T> node, Consumer<T> consumer) {
@@ -115,9 +114,11 @@ public class Tree<T> {
         TreeNode<T> currentNode = root;
 
         for (; ; ) {
-            if (compareTreeNodesData(data, currentNode.getData()) == 0) {
+            int comparisonResult = compare(data, currentNode.getData());
+
+            if (comparisonResult == 0) {
                 return currentNode;
-            } else if (compareTreeNodesData(data, currentNode.getData()) < 0) {
+            } else if (comparisonResult < 0) {
                 if (currentNode.getLeft() != null) {
                     currentNode = currentNode.getLeft();
                 } else {
@@ -144,7 +145,7 @@ public class Tree<T> {
         TreeNode<T> currentNode = root;
 
         for (; ; ) {
-            if (compareTreeNodesData(data, currentNode.getData()) < 0) {
+            if (compare(data, currentNode.getData()) < 0) {
                 if (currentNode.getLeft() != null) {
                     currentNode = currentNode.getLeft();
                 } else {
@@ -175,11 +176,15 @@ public class Tree<T> {
         TreeNode<T> currentNodeParent = null;
 
         for (; ; ) {
-            if (compareTreeNodesData(data, currentNode.getData()) == 0) {
+            int comparisonResult = compare(data, currentNode.getData());
+
+            if (comparisonResult == 0) {
                 removeNode(currentNode, currentNodeParent);
 
                 return true;
-            } else if (compareTreeNodesData(data, currentNode.getData()) < 0) {
+            }
+
+            if (comparisonResult < 0) {
                 if (currentNode.getLeft() != null) {
                     currentNodeParent = currentNode;
                     currentNode = currentNode.getLeft();
@@ -201,9 +206,9 @@ public class Tree<T> {
         if (nodeToRemoveParent == null) {
             if (nodeToRemove.getLeft() == null && nodeToRemove.getRight() == null) {
                 root = null;
-            } else if ((nodeToRemove.getRight() == null)) {
+            } else if (nodeToRemove.getRight() == null) {
                 root = nodeToRemove.getLeft();
-            } else if ((nodeToRemove.getLeft() == null)) {
+            } else if (nodeToRemove.getLeft() == null) {
                 root = nodeToRemove.getRight();
             } else {
                 TreeNode<T> nodeToReplaceParent = nodeToRemove;
@@ -236,13 +241,13 @@ public class Tree<T> {
                 } else {
                     nodeToRemoveParent.setRight(null);
                 }
-            } else if ((nodeToRemove.getRight() == null)) {
+            } else if (nodeToRemove.getRight() == null) {
                 if (nodeToRemove == nodeToRemoveParent.getLeft()) {
                     nodeToRemoveParent.setLeft(nodeToRemove.getLeft());
                 } else {
                     nodeToRemoveParent.setRight(nodeToRemove.getLeft());
                 }
-            } else if ((nodeToRemove.getLeft() == null)) {
+            } else if (nodeToRemove.getLeft() == null) {
                 if (nodeToRemove == nodeToRemoveParent.getLeft()) {
                     nodeToRemoveParent.setLeft(nodeToRemove.getRight());
                 } else {
