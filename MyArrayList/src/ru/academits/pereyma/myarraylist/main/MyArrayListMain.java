@@ -26,7 +26,7 @@ public class MyArrayListMain {
 
         System.out.println("=====");
 
-        System.out.println(list1.remove(Integer.valueOf(7)));
+        System.out.println(list1.remove(Integer.valueOf(-1)));
         System.out.println(list1.remove(2));
         System.out.println(list1);
         System.out.println(list1.size());

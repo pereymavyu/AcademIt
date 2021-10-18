@@ -91,7 +91,14 @@ public class MyArrayList<E> implements List<E> {
     }
 
     private void increaseCapacity() {
-        items = Arrays.copyOf(items, items.length * 2 + 1);
+        if (items.length == 0) {
+            //noinspection unchecked
+            items = (E[]) new Object[1];
+
+            return;
+        }
+
+        items = Arrays.copyOf(items, items.length * 2);
     }
 
     public void ensureCapacity(int capacity) {
@@ -115,15 +122,15 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean remove(Object o) {
-        for (int i = 0; i < size; ++i) {
-            if (Objects.equals(o, items[i])) {
-                remove(i);
+        int itemToRemoveIndex = indexOf(o);
 
-                return true;
-            }
+        if (itemToRemoveIndex == -1) {
+            return false;
+        } else {
+            remove(itemToRemoveIndex);
+
+            return true;
         }
-
-        return false;
     }
 
     @Override
@@ -142,9 +149,9 @@ public class MyArrayList<E> implements List<E> {
         return addAll(size, c);
     }
 
-    private void checkIndex(int index, int upperBound) {
-        if (index < 0 || index > upperBound) {
-            throw new IndexOutOfBoundsException("Index " + index + " must be greater than 0 and not greater than " + upperBound);
+    private void checkIndex(int index, int maxIndex) {
+        if (index < 0 || index > maxIndex) {
+            throw new IndexOutOfBoundsException("Index " + index + " must be not less than 0 and not greater than " + maxIndex);
         }
     }
 
@@ -180,7 +187,6 @@ public class MyArrayList<E> implements List<E> {
 
                 --i;
                 isChanged = true;
-
             }
         }
 
@@ -206,6 +212,10 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public void clear() {
+        if (size == 0) {
+            return;
+        }
+
         for (int i = 0; i < size; ++i) {
             items[i] = null;
         }
@@ -220,19 +230,19 @@ public class MyArrayList<E> implements List<E> {
             return true;
         }
 
-        if (o == null || o.getClass() != this.getClass()) {
+        if (o == null || o.getClass() != getClass()) {
             return false;
         }
 
         //noinspection unchecked
-        MyArrayList<E> a = (MyArrayList<E>) o;
+        MyArrayList<E> list = (MyArrayList<E>) o;
 
-        if (size != a.size) {
+        if (size != list.size) {
             return false;
         }
 
         for (int i = 0; i < size; ++i) {
-            if (!Objects.equals(a.items[i], items[i])) {
+            if (!Objects.equals(list.items[i], items[i])) {
                 return false;
             }
         }
