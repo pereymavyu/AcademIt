@@ -14,6 +14,10 @@ public class HashTable<E> implements Collection<E> {
     }
 
     public HashTable(int arrayLength) {
+        if (arrayLength < 1) {
+            throw new IllegalArgumentException("Array length " + arrayLength + " must not be less than 1");
+        }
+
         //noinspection unchecked
         array = (ArrayList<E>[]) new ArrayList<?>[arrayLength];
     }
@@ -25,7 +29,7 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public boolean isEmpty() {
-        return size() == 0;
+        return size == 0;
     }
 
     private int getIndex(Object o) {
@@ -58,7 +62,7 @@ public class HashTable<E> implements Collection<E> {
 
         @Override
         public boolean hasNext() {
-            return currentIndex + 1 < size();
+            return currentIndex + 1 < size;
         }
 
         @Override
@@ -68,11 +72,11 @@ public class HashTable<E> implements Collection<E> {
             }
 
             if (!hasNext()) {
-                throw new NoSuchElementException();
+                throw new NoSuchElementException("There is no next element");
             }
 
             while (array[listInArrayIndex] == null || itemInListIndex >= array[listInArrayIndex].size() - 1) {
-                listInArrayIndex += 1;
+                ++listInArrayIndex;
                 itemInListIndex = -1;
             }
 
@@ -85,7 +89,7 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public Object[] toArray() {
-        Object[] resultingArray = new Object[size()];
+        Object[] resultingArray = new Object[size];
 
         int i = 0;
 
@@ -100,9 +104,9 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public <T> T[] toArray(T[] a) {
-        if (a.length < size()) {
+        if (a.length < size) {
             //noinspection unchecked
-            return (T[]) Arrays.copyOf(toArray(), size(), a.getClass());
+            return (T[]) Arrays.copyOf(toArray(), size, a.getClass());
         }
 
         int i = 0;
@@ -114,8 +118,8 @@ public class HashTable<E> implements Collection<E> {
             ++i;
         }
 
-        if (a.length > size()) {
-            a[size()] = null;
+        if (a.length > size) {
+            a[size] = null;
         }
 
         return a;
@@ -143,10 +147,14 @@ public class HashTable<E> implements Collection<E> {
             return false;
         }
 
-        --size;
-        ++modCount;
+        if (array[index].remove(o)) {
+            --size;
+            ++modCount;
 
-        return array[index].remove(o);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -189,10 +197,13 @@ public class HashTable<E> implements Collection<E> {
     @Override
     public boolean retainAll(Collection<?> c) {
         boolean isChanged = false;
+        int oldListSize;
 
         for (List<E> list : array) {
-            if (list != null && list.retainAll(c)) {
+            if (list != null && (oldListSize = list.size()) > 0 && list.retainAll(c)) {
                 isChanged = true;
+
+                size += list.size() - oldListSize;
             }
         }
 
@@ -221,6 +232,6 @@ public class HashTable<E> implements Collection<E> {
 
     @Override
     public String toString() {
-        return "HashTable" + Arrays.toString(array);
+        return Arrays.toString(array);
     }
 }

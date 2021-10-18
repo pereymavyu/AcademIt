@@ -58,7 +58,9 @@ public class HashTableMain {
 
         System.out.println("===");
 
+        System.out.println(table1.size());
         System.out.println(table1.retainAll(Arrays.asList(1, 5, 17)));
+        System.out.println(table1.size());
         System.out.println(table1);
         System.out.println(table2);
         table2.add(443);
