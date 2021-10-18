@@ -21,7 +21,7 @@ public class SinglyLinkedList<T> {
 
     private void checkIndex(int index) {
         if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException("Index " + index + " is out of list index range [" + 0 + ", " + (size - 1) + "]");
+            throw new IndexOutOfBoundsException("Index " + index + " is out of list index range [0, " + (size - 1) + "]");
         }
     }
 
@@ -89,7 +89,7 @@ public class SinglyLinkedList<T> {
 
     public void insert(int index, T data) {
         if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException("Index " + index + " is out of list index range [" + 0 + ", " + size + "]");
+            throw new IndexOutOfBoundsException("Index " + index + " is out of list index range [0, " + size + "]");
         }
 
         if (index == 0) {
