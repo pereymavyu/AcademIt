@@ -1,108 +1,99 @@
 package ru.academits.pereyma.temperature.view;
 
-import ru.academits.pereyma.temperature.model.TemperatureModel;
-import ru.academits.pereyma.temperature.model.TemperatureScales;
+import ru.academits.pereyma.temperature.model.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class TemperatureView extends JFrame {
+public class TemperatureView {
     private final TemperatureModel model;
-
-    private final JTextField userInputField;
-    private final JTextField outputField;
-    private final JComboBox<String> inputTemperatureScalesList;
-    private final JComboBox<String> outputTemperatureScalesList;
+    private JFrame frame;
+    private JTextField userInputField;
+    private JTextField outputField;
+    private JComboBox<String> inputScaleSelector;
+    private JComboBox<String> outputScaleSelector;
 
     public TemperatureView(TemperatureModel model) {
-        super("Temperature Converter");
-
         this.model = model;
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
-        getContentPane().setLayout(new GridLayout(4, 2));
+        SwingUtilities.invokeLater(this::makeFrame);
+    }
 
+    public void makeFrame() {
+        // Создание окна программы
+        frame = new JFrame("Temperature converter");
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setResizable(false);
+        frame.getContentPane().setLayout(new GridLayout(4, 2));
+
+        // Создание поля ввода температуры и подписи для него
         JLabel temperatureInputPrompt = new JLabel("Enter temperature value:", SwingConstants.RIGHT);
-        add(temperatureInputPrompt);
+        frame.add(temperatureInputPrompt);
 
         userInputField = new JTextField(10);
-        add(userInputField);
+        frame.add(userInputField);
 
-        JLabel inputTemperatureScaleLabel = new JLabel("From:", SwingConstants.RIGHT);
-        add(inputTemperatureScaleLabel);
+        // Создание выпадающего списка шкал входной температуры и подписи для него
+        JLabel inputScaleLabel = new JLabel("From:", SwingConstants.RIGHT);
+        frame.add(inputScaleLabel);
 
-        String[] temperatureScales = {"Celsius", "Fahrenheit", "Kelvin"};
+        String[] scalesNames = model.getScalesNames();
 
-        inputTemperatureScalesList = new JComboBox<>(temperatureScales);
-        inputTemperatureScalesList.setSelectedIndex(0);
-        add(inputTemperatureScalesList);
+        inputScaleSelector = new JComboBox<>(scalesNames);
+        inputScaleSelector.setSelectedIndex(0);
+        frame.add(inputScaleSelector);
 
-        JLabel outputTemperatureScaleLabel = new JLabel("To:", SwingConstants.RIGHT);
-        add(outputTemperatureScaleLabel);
+        // Создание выпадающего списка шкал выходной температуры и подписи для него
+        JLabel outputScaleLabel = new JLabel("To:", SwingConstants.RIGHT);
+        frame.add(outputScaleLabel);
 
-        outputTemperatureScalesList = new JComboBox<>(temperatureScales);
-        outputTemperatureScalesList.setSelectedIndex(1);
-        add(outputTemperatureScalesList);
+        outputScaleSelector = new JComboBox<>(scalesNames);
+        outputScaleSelector.setSelectedIndex(1);
+        frame.add(outputScaleSelector);
 
+        // Создание кнопки Convert и поля вывода конвертированной температуры
         JButton convertButton = new JButton("Convert");
-        add(convertButton);
+        frame.add(convertButton);
 
         outputField = new JTextField(20);
         outputField.setEditable(false);
-        add(outputField);
+        frame.add(outputField);
 
-        convertButton.addActionListener(new ButtonListener());
-
-        pack();
-        setVisible(true);
-    }
-
-    class ButtonListener implements ActionListener {
-        @Override
-        public void actionPerformed(ActionEvent e) {
+        convertButton.addActionListener(e -> {
             double inputTemp;
 
             try {
                 inputTemp = Double.parseDouble(userInputField.getText());
             } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(TemperatureView.this, "Please, enter a number");
+                JOptionPane.showMessageDialog(frame, "Please, enter a number");
                 return;
             }
 
-            int index = inputTemperatureScalesList.getSelectedIndex();
+            TemperatureScale[] scales = model.getScales();
 
-            if (index == 0) {
-                model.setInputTemperatureScale(TemperatureScales.CELSIUS);
-            } else if (index == 1) {
-                model.setInputTemperatureScale(TemperatureScales.FAHRENHEIT);
-            } else {
-                model.setInputTemperatureScale(TemperatureScales.KELVIN);
-            }
+            // Установка входной и выходной температурной шкалы
+            // (индексы температурных шкал в выпадающих списках и в массиве используемых шкал в TemperatureModelImp.TEMPERATURE_SCALES соответствуют друг другу)
+            int inputScaleIndex = inputScaleSelector.getSelectedIndex();
+            model.setInputScale(scales[inputScaleIndex]);
 
-            int indexOut = outputTemperatureScalesList.getSelectedIndex();
-
-            if (indexOut == 0) {
-                model.setOutputTemperatureScale(TemperatureScales.CELSIUS);
-            } else if (indexOut == 1) {
-                model.setOutputTemperatureScale(TemperatureScales.FAHRENHEIT);
-            } else {
-                model.setOutputTemperatureScale(TemperatureScales.KELVIN);
-            }
+            int outputScaleIndex = outputScaleSelector.getSelectedIndex();
+            model.setOutputScale(scales[outputScaleIndex]);
 
             double resultTemperature;
 
             try {
-                resultTemperature = model.getConvertedTemperature(inputTemp, model.getInputTemperatureScale(), model.getOutputTemperatureScale());
+                resultTemperature = model.getConvertedTemperature(inputTemp);
             } catch (IllegalArgumentException ex) {
-                JOptionPane.showMessageDialog(TemperatureView.this, "Temperature value must not be less than absolute zero (-273.15 for Celsius, -459.67 for Fahrenheit, 0 for Kelvin)");
+                JOptionPane.showMessageDialog(frame, "Temperature value must not be less than absolute zero (-273.15 for Celsius, -459.67 for Fahrenheit, 0 for Kelvin)");
                 return;
             }
 
-            outputField.setText(String.format("= %.2f", resultTemperature));
-        }
+            outputField.setText(String.format("%.2f", resultTemperature));
+        });
+
+        frame.pack();
+        frame.setVisible(true);
     }
 }
