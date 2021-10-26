@@ -122,15 +122,15 @@ public class MyArrayList<E> implements List<E> {
 
     @Override
     public boolean remove(Object o) {
-        int itemToRemoveIndex = indexOf(o);
+        int index = indexOf(o);
 
-        if (itemToRemoveIndex == -1) {
+        if (index == -1) {
             return false;
-        } else {
-            remove(itemToRemoveIndex);
-
-            return true;
         }
+
+        remove(index);
+
+        return true;
     }
 
     @Override
@@ -158,6 +158,10 @@ public class MyArrayList<E> implements List<E> {
     @Override
     public boolean addAll(int index, Collection<? extends E> c) {
         checkIndex(index, size);
+
+        if (c.size() == 0) {
+            return false;
+        }
 
         ensureCapacity(size + c.size());
 
