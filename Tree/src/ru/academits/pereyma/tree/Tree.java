@@ -106,9 +106,9 @@ public class Tree<T> {
         }
     }
 
-    private TreeNode<T> getNode(T data) {
+    public boolean contains(T data) {
         if (root == null) {
-            return null;
+            return false;
         }
 
         TreeNode<T> currentNode = root;
@@ -117,18 +117,20 @@ public class Tree<T> {
             int comparisonResult = compare(data, currentNode.getData());
 
             if (comparisonResult == 0) {
-                return currentNode;
-            } else if (comparisonResult < 0) {
+                return true;
+            }
+
+            if (comparisonResult < 0) {
                 if (currentNode.getLeft() != null) {
                     currentNode = currentNode.getLeft();
                 } else {
-                    return null;
+                    return false;
                 }
             } else {
                 if (currentNode.getRight() != null) {
                     currentNode = currentNode.getRight();
                 } else {
-                    return null;
+                    return false;
                 }
             }
         }

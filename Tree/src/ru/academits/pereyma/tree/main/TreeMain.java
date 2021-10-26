@@ -43,5 +43,8 @@ public class TreeMain {
         System.out.println();
 
         tree1.recursiveDepthTraversal(x -> System.out.print(x + " "));
+        System.out.println();
+
+        System.out.println(tree1.contains(15));
     }
 }
