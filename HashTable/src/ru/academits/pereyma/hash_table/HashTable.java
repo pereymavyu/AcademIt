@@ -55,7 +55,7 @@ public class HashTable<E> implements Collection<E> {
     private class MyHashTableIterator implements Iterator<E> {
         private int currentIndex = -1;
 
-        private int listInArrayIndex = 0;
+        private int listInArrayIndex;
         private int itemInListIndex = -1;
 
         private final int expectedModCount = modCount;
@@ -197,10 +197,15 @@ public class HashTable<E> implements Collection<E> {
     @Override
     public boolean retainAll(Collection<?> c) {
         boolean isChanged = false;
-        int oldListSize;
 
         for (List<E> list : array) {
-            if (list != null && (oldListSize = list.size()) > 0 && list.retainAll(c)) {
+            if (list == null) {
+                continue;
+            }
+
+            int oldListSize = list.size();
+
+            if (oldListSize > 0 && list.retainAll(c)) {
                 isChanged = true;
 
                 size += list.size() - oldListSize;
